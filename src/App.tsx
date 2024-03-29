@@ -22,30 +22,61 @@ const DATA = {
   userAvatar:
     "https://yt3.ggpht.com/p89RToB7j2iu9BYhK2Zn6vLkxJXYC9cAbxfJ0eMvUd4jrsyRQtuYIvinn8N2H6utyeBKcrvlhSE=s176-c-k-c0x00ffffff-no-rj-mo",
   author: "Tesla",
-  publishTime: "2022-09-28T14:00:00",
+  publishTime: "2024-03-20T14:00:00",
   numberOfViews: 123,
 };
 
-function VideoCard({ video }) {
-  let publishTime = new Date(video.publishTime).toLocaleDateString();
+function VideoCard({ video, isData }) {
+  const currentDate = new Date();
+  const publishDate = new Date(video.publishTime);
+  const diff = currentDate.getTime() - publishDate.getTime();
+  const daysAgo = Math.floor(diff / (1000 * 60 * 60 * 24));
 
   return (
     <div className="video-card">
-      <img
-        src={video.videoThumbNail}
-        alt={video.videoTitle}
-        className="video-thumbnail"
-      />
+      <div className="video-thumbnail">
+        {isData ? (
+          <a href={video.videoLink} target="_blank">
+            <img
+              src={video.videoThumbNail}
+              alt={video.videoTitle}
+              className="video-thumbnail-img"
+            />
+          </a>
+        ) : (
+          <div className="video-thumbnail-img skeleton"></div>
+        )}
+      </div>
       <div className="video-info">
-        <div className="video-author-picture">
-          <img src={video.userAvatar} alt={video.author} />
-        </div>
+        {isData ? (
+          <a href={video.videoLink} target="_blank">
+            <img
+              src={video.userAvatar}
+              alt={video.author}
+              className="video-author-img"
+            />
+          </a>
+        ) : (
+          <div className="video-author-img skeleton"></div>
+        )}
         <div className="video-details">
-          <h3 className="video-title">{video.videoTitle}</h3>
-          <p className="video-author-name">{video.author}</p>
-          <span className="video-data">
-            {video.numberOfViews} views • {publishTime}
-          </span>
+          {isData ? (
+            <div>
+              <a className="video-title" href={video.videoLink} target="_blank">
+                {video.videoTitle}
+              </a>
+              <p className="video-author-name">{video.author}</p>
+              <span className="video-data">
+                {video.numberOfViews} views • {daysAgo} days ago
+              </span>
+            </div>
+          ) : (
+            <div>
+              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -56,6 +87,7 @@ function App() {
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isDataAvailable, setIsDataAvailable] = useState(false);
 
   function handleChange(event) {
     const userInput = event.target.value;
@@ -67,6 +99,17 @@ function App() {
     setFilteredSuggestions(filteredSuggestions);
     setShowSuggestions(true);
   }
+
+  function delayData() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        setIsDataAvailable(true);
+        resolve(DATA);
+      }, 2000);
+    });
+  }
+
+  delayData();
 
   return (
     <div className="app">
@@ -82,8 +125,8 @@ function App() {
         )}
       </div>
       <hr></hr>
-      <h2>Video</h2>
-      <VideoCard video={DATA} />
+      <h2>Video Card</h2>
+      <VideoCard video={DATA} isData={isDataAvailable} />
     </div>
   );
 }
