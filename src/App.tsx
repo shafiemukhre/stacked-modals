@@ -1,132 +1,77 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 
-const COUNTRIES = [
-  "Afghanistan",
-  "Albania",
-  "Algeria",
-  "Andorra",
-  "Belarus",
-  "Belgium",
-  "Belize",
-  "Botswana",
-  "Brazil",
-  "China",
-];
+function App() {
+  // array of "true", we are using the index to track the modals, not the element
+  const [modals, setModals] = useState([]);
 
-const DATA = {
-  videoTitle: "Tesla M3",
-  videoLink: "https://www.youtube.com/watch?v=LtOqU2o81iI",
-  videoThumbNail:
-    "https://i.ytimg.com/vi/LtOqU2o81iI/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLA9sy0ANFxQetkKmAqbSsEb5GLuRg",
-  userAvatar:
-    "https://yt3.ggpht.com/p89RToB7j2iu9BYhK2Zn6vLkxJXYC9cAbxfJ0eMvUd4jrsyRQtuYIvinn8N2H6utyeBKcrvlhSE=s176-c-k-c0x00ffffff-no-rj-mo",
-  author: "Tesla",
-  publishTime: "2024-03-20T14:00:00",
-  numberOfViews: 123,
-};
+  // create modal
+  const handleOpenModal = () => {
+    setModals((oldModals) => [...oldModals, true]);
+  };
 
-function VideoCard({ video, isData }) {
-  const currentDate = new Date();
-  const publishDate = new Date(video.publishTime);
-  const diff = currentDate.getTime() - publishDate.getTime();
-  const daysAgo = Math.floor(diff / (1000 * 60 * 60 * 24));
+  // close modal
+  const handleCloseModal = (index) => {
+    setModals(modals.filter((_, i) => i != index));
+  };
 
   return (
-    <div className="video-card">
-      <div className="video-thumbnail">
-        {isData ? (
-          <a href={video.videoLink} target="_blank">
-            <img
-              src={video.videoThumbNail}
-              alt={video.videoTitle}
-              className="video-thumbnail-img"
-            />
-          </a>
-        ) : (
-          <div className="video-thumbnail-img skeleton"></div>
-        )}
-      </div>
-      <div className="video-info">
-        {isData ? (
-          <a href={video.videoLink} target="_blank">
-            <img
-              src={video.userAvatar}
-              alt={video.author}
-              className="video-author-img"
-            />
-          </a>
-        ) : (
-          <div className="video-author-img skeleton"></div>
-        )}
-        <div className="video-details">
-          {isData ? (
-            <div>
-              <a className="video-title" href={video.videoLink} target="_blank">
-                {video.videoTitle}
-              </a>
-              <p className="video-author-name">{video.author}</p>
-              <span className="video-data">
-                {video.numberOfViews} views • {daysAgo} days ago
-              </span>
-            </div>
-          ) : (
-            <div>
-              <div className="skeleton skeleton-text"></div>
-              <div className="skeleton skeleton-text"></div>
-              <div className="skeleton skeleton-text"></div>
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="app">
+      <button onClick={handleOpenModal}>Open Modal</button>
+      {modals.map((_, index) => (
+        <ModalDialog
+          key={index}
+          index={index}
+          onClose={() => handleCloseModal(index)}
+          onCreate={handleOpenModal}
+        />
+      ))}
+      <h1>News Headline</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pharetra,
+        libero eget rutrum scelerisque, mauris magna gravida justo, nec aliquet
+        purus libero in velit. Proin nec ligula pretium, rutrum metus eu,
+        vestibulum ante. Fusce porta tempus ex, nec aliquam lectus. Aliquam erat
+        volutpat. Vestibulum a lorem sit amet nibh scelerisque pharetra. In
+        facilisis, erat eu auctor pellentesque, mi mi scelerisque ligula, ut
+        sagittis orci odio commodo ipsum. Nullam at elementum nulla. Aenean mi
+        leo, consectetur iaculis risus quis, scelerisque pulvinar tortor.
+        Aliquam sit amet scelerisque metus. Cras sem nunc, placerat nec arcu
+        nec, eleifend vestibulum tellus.
+      </p>
+      <p>
+        Aliquam dapibus purus non massa mattis porta. Pellentesque habitant
+        morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+        Aliquam fringilla efficitur nisi imperdiet dictum. Duis aliquam nec
+        nulla eget vehicula. Vivamus pharetra ac velit vitae viverra. Integer
+        ligula dolor, pellentesque non odio sed, sodales eleifend mi. Vestibulum
+        convallis justo augue.
+      </p>
     </div>
   );
 }
 
-function App() {
-  const [inputValue, setInputValue] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isDataAvailable, setIsDataAvailable] = useState(false);
-
-  function handleChange(event) {
-    const userInput = event.target.value;
-    const filteredSuggestions = COUNTRIES.filter((suggestion) =>
-      suggestion.toLowerCase().startsWith(userInput.toLowerCase())
-    );
-
-    setInputValue(userInput);
-    setFilteredSuggestions(filteredSuggestions);
-    setShowSuggestions(true);
-  }
-
-  function delayData() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        setIsDataAvailable(true);
-        resolve(DATA);
-      }, 2000);
-    });
-  }
-
-  delayData();
-
+function ModalDialog({ onClose, onCreate, index }) {
   return (
-    <div className="app">
-      <h2>Autocomplete</h2>
-      <div className="search-bar">
-        <input type="text" value={inputValue} onChange={handleChange} />
-        {showSuggestions && inputValue && (
-          <ul className="suggestions">
-            {filteredSuggestions.map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
-            ))}
-          </ul>
-        )}
+    <div className="modal-overlay">
+      <div
+        className="modal"
+        style={{ transform: `translate(${index * 20}px, ${index * 20}px)` }}
+      >
+        <div className="modal-content">
+          Vivamus pharetra ac velit vitae viverra. Integer ligula dolor,
+          pellentesque non odio sed, sodales eleifend mi. Vestibulum convallis
+          justo augue.
+        </div>
+        <button className="new-modal" onClick={onCreate}>
+          {" "}
+          Create new modal
+        </button>
+
+        <button className="close-button" onClick={onClose}>
+          Close
+        </button>
       </div>
-      <hr></hr>
-      <h2>Video Card</h2>
-      <VideoCard video={DATA} isData={isDataAvailable} />
     </div>
   );
 }
