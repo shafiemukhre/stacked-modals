@@ -1,11 +1,10 @@
-# Autocomplete and Video Card
+# Stacked Modals
+
+## Preview
+
+![](./src/assets/stacked-modals-image.png)
 
 ## Local Development Setup
-
-```
-cd autocomplete-and-video
-
-```
 
 ```
 pnpm install
